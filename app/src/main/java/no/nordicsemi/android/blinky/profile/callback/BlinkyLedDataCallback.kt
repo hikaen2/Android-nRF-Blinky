@@ -21,15 +21,15 @@ abstract class BlinkyLedDataCallback : ProfileDataCallback, DataSentCallback, Bl
             return
         }
 
-        when (data.getIntValue(Data.FORMAT_UINT8, 0)!!) {
-            STATE_ON.toInt() -> onLedStateChanged(device, true)
-            STATE_OFF.toInt() -> onLedStateChanged(device, false)
+        when (data.getIntValue(Data.FORMAT_UINT8, 0)) {
+            STATE_ON -> onLedStateChanged(device, true)
+            STATE_OFF -> onLedStateChanged(device, false)
             else -> onInvalidDataReceived(device, data)
         }
     }
 
     companion object {
-        private const val STATE_OFF: Byte = 0x00
-        private const val STATE_ON: Byte = 0x01
+        private const val STATE_OFF = 0x00
+        private const val STATE_ON = 0x01
     }
 }

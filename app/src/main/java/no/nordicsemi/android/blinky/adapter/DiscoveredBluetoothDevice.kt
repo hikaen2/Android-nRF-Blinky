@@ -4,6 +4,7 @@ import android.bluetooth.BluetoothDevice
 import android.os.Parcel
 import android.os.Parcelable
 import no.nordicsemi.android.support.v18.scanner.ScanResult
+import kotlin.math.max
 
 class DiscoveredBluetoothDevice : Parcelable {
     val device: BluetoothDevice?
@@ -37,22 +38,15 @@ class DiscoveredBluetoothDevice : Parcelable {
      *
      * @return True, if the RSSI range has changed.
      */
-    /* package */ internal fun hasRssiLevelChanged(): Boolean {
-        val newLevel = when {
+    internal fun hasRssiLevelChanged(): Boolean {
+        fun level(rssi: Int): Int = when {
             rssi <= 10 -> 0
             rssi <= 28 -> 1
             rssi <= 45 -> 2
             rssi <= 65 -> 3
             else -> 4
         }
-        val oldLevel = when {
-            previousRssi <= 10 -> 0
-            previousRssi <= 28 -> 1
-            previousRssi <= 45 -> 2
-            previousRssi <= 65 -> 3
-            else -> 4
-        }
-        return newLevel != oldLevel
+        return level(rssi) != level(previousRssi)
     }
 
     /**
@@ -62,14 +56,10 @@ class DiscoveredBluetoothDevice : Parcelable {
      */
     fun update(scanResult: ScanResult) {
         this.scanResult = scanResult
-        name = if (scanResult.scanRecord != null)
-            scanResult.scanRecord!!.deviceName
-        else
-            null
+        name = scanResult.scanRecord?.deviceName
         previousRssi = rssi
         rssi = scanResult.rssi
-        if (highestRssi < rssi)
-            highestRssi = rssi
+        highestRssi = max(highestRssi, rssi)
     }
 
     fun matches(scanResult: ScanResult): Boolean {
@@ -90,13 +80,13 @@ class DiscoveredBluetoothDevice : Parcelable {
 
     // Parcelable implementation
 
-    private constructor(`in`: Parcel) {
-        device = `in`.readParcelable(BluetoothDevice::class.java.classLoader)
-        scanResult = `in`.readParcelable(ScanResult::class.java.classLoader)
-        name = `in`.readString()
-        rssi = `in`.readInt()
-        previousRssi = `in`.readInt()
-        highestRssi = `in`.readInt()
+    private constructor(input: Parcel) {
+        device = input.readParcelable(BluetoothDevice::class.java.classLoader)
+        scanResult = input.readParcelable(ScanResult::class.java.classLoader)
+        name = input.readString()
+        rssi = input.readInt()
+        previousRssi = input.readInt()
+        highestRssi = input.readInt()
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {

@@ -1,6 +1,5 @@
 package no.nordicsemi.android.blinky.adapter
 
-import android.content.Context
 import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
@@ -17,10 +16,9 @@ import no.nordicsemi.android.blinky.ScannerActivity
 import no.nordicsemi.android.blinky.viewmodels.DevicesLiveData
 
 class DevicesAdapter(
-    activity: ScannerActivity,
+    private val activity: ScannerActivity,
     devicesLiveData: DevicesLiveData
 ) : RecyclerView.Adapter<DevicesAdapter.ViewHolder>() {
-    private val mContext: Context
     private var mDevices: List<DiscoveredBluetoothDevice>? = null
     private var mOnItemClickListener: OnItemClickListener? = null
 
@@ -37,7 +35,6 @@ class DevicesAdapter(
     }
 
     init {
-        mContext = activity
         setHasStableIds(true)
         devicesLiveData.observe(activity, Observer { devices ->
             val result = DiffUtil.calculateDiff(
@@ -49,7 +46,7 @@ class DevicesAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val layoutView = LayoutInflater.from(mContext)
+        val layoutView = LayoutInflater.from(activity)
             .inflate(R.layout.device_item, parent, false)
         return ViewHolder(layoutView)
     }

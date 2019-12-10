@@ -17,7 +17,7 @@ import no.nordicsemi.android.blinky.viewmodels.BlinkyViewModel
 
 class BlinkyActivity : AppCompatActivity() {
 
-    private var mViewModel: BlinkyViewModel? = null
+    private lateinit var mViewModel: BlinkyViewModel
 
     @BindView(R.id.led_switch)
     internal lateinit var mLed: Switch
@@ -42,7 +42,7 @@ class BlinkyActivity : AppCompatActivity() {
 
         // Configure the view model
         mViewModel = ViewModelProviders.of(this).get(BlinkyViewModel::class.java)
-        mViewModel!!.connect(device)
+        mViewModel.connect(device)
 
         // Set up views
         val ledState = findViewById<TextView>(R.id.led_state)
@@ -51,30 +51,30 @@ class BlinkyActivity : AppCompatActivity() {
         val content = findViewById<View>(R.id.device_container)
         val notSupported = findViewById<View>(R.id.not_supported)
 
-        mLed.setOnCheckedChangeListener { _, isChecked -> mViewModel!!.toggleLED(isChecked) }
-        mViewModel!!.isDeviceReady.observe(this, Observer {
+        mLed.setOnCheckedChangeListener { _, isChecked -> mViewModel.toggleLED(isChecked) }
+        mViewModel.isDeviceReady.observe(this, Observer {
             progressContainer.visibility = View.GONE
             content.visibility = View.VISIBLE
         })
-        mViewModel!!.connectionState.observe(this, Observer { text ->
+        mViewModel.connectionState.observe(this, Observer { text ->
             if (text != null) {
                 progressContainer.visibility = View.VISIBLE
                 notSupported.visibility = View.GONE
                 connectionState.text = text
             }
         })
-        mViewModel!!.isConnected.observe(this, Observer<Boolean> { this.onConnectionStateChanged(it) })
-        mViewModel!!.isSupported.observe(this, Observer { supported ->
+        mViewModel.isConnected.observe(this, Observer<Boolean> { this.onConnectionStateChanged(it) })
+        mViewModel.isSupported.observe(this, Observer { supported ->
             if (!supported) {
                 progressContainer.visibility = View.GONE
                 notSupported.visibility = View.VISIBLE
             }
         })
-        mViewModel!!.ledState.observe(this, Observer { isOn ->
+        mViewModel.ledState.observe(this, Observer { isOn ->
             ledState.setText(if (isOn) R.string.turn_on else R.string.turn_off)
             mLed.isChecked = isOn!!
         })
-        mViewModel!!.buttonState.observe(this,
+        mViewModel.buttonState.observe(this,
             Observer { pressed ->
                 mButtonState.setText(
                     if (pressed)
@@ -87,7 +87,7 @@ class BlinkyActivity : AppCompatActivity() {
 
     @OnClick(R.id.action_clear_cache)
     fun onTryAgainClicked() {
-        mViewModel!!.reconnect()
+        mViewModel.reconnect()
     }
 
     private fun onConnectionStateChanged(connected: Boolean) {

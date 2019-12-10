@@ -30,7 +30,7 @@ import no.nordicsemi.android.blinky.viewmodels.ScannerViewModel
 
 class ScannerActivity : AppCompatActivity(), DevicesAdapter.OnItemClickListener {
 
-    private var mScannerViewModel: ScannerViewModel? = null
+    private lateinit var mScannerViewModel: ScannerViewModel
 
     @BindView(R.id.state_scanning)
     internal lateinit var mScanningView: View
@@ -58,14 +58,14 @@ class ScannerActivity : AppCompatActivity(), DevicesAdapter.OnItemClickListener 
 
         // Create view model containing utility methods for scanning
         mScannerViewModel = ViewModelProviders.of(this).get(ScannerViewModel::class.java)
-        mScannerViewModel!!.scannerState.observe(this, Observer<ScannerStateLiveData> { this.startScan(it) })
+        mScannerViewModel.scannerState.observe(this, Observer<ScannerStateLiveData> { this.startScan(it) })
 
         // Configure the recycler view
         val recyclerView = findViewById<RecyclerView>(R.id.recycler_view_ble_devices)
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
         (recyclerView.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
-        val adapter = DevicesAdapter(this, mScannerViewModel!!.devices)
+        val adapter = DevicesAdapter(this, mScannerViewModel.devices)
         adapter.setOnItemClickListener(this)
         recyclerView.adapter = adapter
     }
@@ -82,8 +82,8 @@ class ScannerActivity : AppCompatActivity(), DevicesAdapter.OnItemClickListener 
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.filter, menu)
-        menu.findItem(R.id.filter_uuid).isChecked = mScannerViewModel!!.isUuidFilterEnabled
-        menu.findItem(R.id.filter_nearby).isChecked = mScannerViewModel!!.isNearbyFilterEnabled
+        menu.findItem(R.id.filter_uuid).isChecked = mScannerViewModel.isUuidFilterEnabled
+        menu.findItem(R.id.filter_nearby).isChecked = mScannerViewModel.isNearbyFilterEnabled
         return true
     }
 
@@ -91,12 +91,12 @@ class ScannerActivity : AppCompatActivity(), DevicesAdapter.OnItemClickListener 
         when (item.itemId) {
             R.id.filter_uuid -> {
                 item.isChecked = !item.isChecked
-                mScannerViewModel!!.filterByUuid(item.isChecked)
+                mScannerViewModel.filterByUuid(item.isChecked)
                 return true
             }
             R.id.filter_nearby -> {
                 item.isChecked = !item.isChecked
-                mScannerViewModel!!.filterByDistance(item.isChecked)
+                mScannerViewModel.filterByDistance(item.isChecked)
                 return true
             }
         }
@@ -116,7 +116,7 @@ class ScannerActivity : AppCompatActivity(), DevicesAdapter.OnItemClickListener 
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == REQUEST_ACCESS_COARSE_LOCATION) {
-            mScannerViewModel!!.refresh()
+            mScannerViewModel.refresh()
         }
     }
 
@@ -163,7 +163,7 @@ class ScannerActivity : AppCompatActivity(), DevicesAdapter.OnItemClickListener 
                 mNoBluetoothView.visibility = View.GONE
 
                 // We are now OK to start scanning
-                mScannerViewModel!!.startScan()
+                mScannerViewModel.startScan()
                 mScanningView.visibility = View.VISIBLE
 
                 if (!state.hasRecords()) {
@@ -199,15 +199,15 @@ class ScannerActivity : AppCompatActivity(), DevicesAdapter.OnItemClickListener 
      * stop scanning for bluetooth devices.
      */
     private fun stopScan() {
-        mScannerViewModel!!.stopScan()
+        mScannerViewModel.stopScan()
     }
 
     /**
      * Clears the list of devices, which will notify the observer.
      */
     private fun clear() {
-        mScannerViewModel!!.devices.clear()
-        mScannerViewModel!!.scannerState.clearRecords()
+        mScannerViewModel.devices.clear()
+        mScannerViewModel.scannerState.clearRecords()
     }
 
     companion object {

@@ -12,7 +12,7 @@ abstract class BlinkyButtonDataCallback : ProfileDataCallback, BlinkyButtonCallb
             return
         }
 
-        when (data.getIntValue(Data.FORMAT_UINT8, 0)!!) {
+        when (data.getIntValue(Data.FORMAT_UINT8, 0)) {
             STATE_PRESSED -> onButtonStateChanged(device, true)
             STATE_RELEASED -> onButtonStateChanged(device, false)
             else -> onInvalidDataReceived(device, data)
