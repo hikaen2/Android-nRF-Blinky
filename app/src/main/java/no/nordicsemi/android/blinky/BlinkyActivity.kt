@@ -29,7 +29,6 @@ class BlinkyActivity : AppCompatActivity() {
         setContentView(R.layout.activity_blinky)
         ButterKnife.bind(this)
 
-        val intent = intent
         val device = intent.getParcelableExtra<DiscoveredBluetoothDevice>(EXTRA_DEVICE)
         val deviceName = device!!.name
         val deviceAddress = device.address

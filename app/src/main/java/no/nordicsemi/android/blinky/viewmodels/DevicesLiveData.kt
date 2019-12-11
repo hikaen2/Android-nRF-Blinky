@@ -37,15 +37,12 @@ class DevicesLiveData internal constructor(private var mFilterUuidRequired: Bool
 
     @Synchronized
     internal fun deviceDiscovered(result: ScanResult): Boolean {
-        val device: DiscoveredBluetoothDevice
 
         // Check if it's a new device.
-        val index = indexOf(result)
-        if (index == -1) {
+        var device : DiscoveredBluetoothDevice? = mDevices.find{ it.matches(result) }
+        if (device == null) {
             device = DiscoveredBluetoothDevice(result)
             mDevices.add(device)
-        } else {
-            device = mDevices[index]
         }
 
         // Update RSSI and name.
@@ -80,20 +77,6 @@ class DevicesLiveData internal constructor(private var mFilterUuidRequired: Bool
         mFilteredDevices = devices
         postValue(mFilteredDevices)
         return mFilteredDevices!!.isNotEmpty()
-    }
-
-    /**
-     * Finds the index of existing devices on the device list.
-     *
-     * @param result scan result.
-     * @return Index of -1 if not found.
-     */
-    private fun indexOf(result: ScanResult): Int {
-        for ((i, device) in mDevices.withIndex()) {
-            if (device.matches(result))
-                return i
-        }
-        return -1
     }
 
     private fun matchesUuidFilter(result: ScanResult?): Boolean {

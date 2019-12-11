@@ -17,40 +17,34 @@ class BlinkyViewModel(application: Application) : AndroidViewModel(application),
 
     // Connection states Connecting, Connected, Disconnecting, Disconnected etc.
     private val mConnectionState = MutableLiveData<String>()
+    val connectionState: LiveData<String>
+        get() = mConnectionState
 
     // Flag to determine if the device is connected
     private val mIsConnected = MutableLiveData<Boolean>()
+    val isConnected: LiveData<Boolean>
+        get() = mIsConnected
 
     // Flag to determine if the device has required services
     private val mIsSupported = MutableLiveData<Boolean>()
+    val isSupported: LiveData<Boolean>
+        get() = mIsSupported
 
     // Flag to determine if the device is ready
     private val mOnDeviceReady = MutableLiveData<Void>()
+    val isDeviceReady: LiveData<Void>
+        get() = mOnDeviceReady
 
     // Flag that holds the on off state of the LED. On is true, Off is False
     private val mLEDState = MutableLiveData<Boolean>()
+    val ledState: LiveData<Boolean>
+        get() = mLEDState
 
     // Flag that holds the pressed released state of the button on the devkit.
     // Pressed is true, Released is false
     private val mButtonState = MutableLiveData<Boolean>()
-
-    val isDeviceReady: LiveData<Void>
-        get() = mOnDeviceReady
-
-    val connectionState: LiveData<String>
-        get() = mConnectionState
-
-    val isConnected: LiveData<Boolean>
-        get() = mIsConnected
-
     val buttonState: LiveData<Boolean>
         get() = mButtonState
-
-    val ledState: LiveData<Boolean>
-        get() = mLEDState
-
-    val isSupported: LiveData<Boolean>
-        get() = mIsSupported
 
     init {
 
