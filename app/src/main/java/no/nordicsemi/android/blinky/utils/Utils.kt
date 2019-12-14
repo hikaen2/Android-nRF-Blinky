@@ -21,10 +21,7 @@ object Utils {
      * @return true if Bluetooth is enabled, false otherwise.
      */
     val isBleEnabled: Boolean
-        get() {
-            val adapter = BluetoothAdapter.getDefaultAdapter()
-            return adapter != null && adapter.isEnabled
-        }
+        get() = BluetoothAdapter.getDefaultAdapter()?.isEnabled ?: false
 
     val isMarshmallowOrAbove: Boolean
         get() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M

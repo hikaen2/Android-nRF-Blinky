@@ -49,7 +49,7 @@ class DevicesLiveData internal constructor(private var mFilterUuidRequired: Bool
         device.update(result)
 
         // Return true if the device was on the filtered list or is to be added.
-        return mFilteredDevices != null && mFilteredDevices!!.contains(device) || matchesUuidFilter(result) && matchesNearbyFilter(device.highestRssi)
+        return mFilteredDevices?.contains(device) ?: false || matchesUuidFilter(result) && matchesNearbyFilter(device.highestRssi)
     }
 
     /**
@@ -69,8 +69,7 @@ class DevicesLiveData internal constructor(private var mFilterUuidRequired: Bool
     internal fun applyFilter(): Boolean {
         val devices = ArrayList<DiscoveredBluetoothDevice>()
         for (device in mDevices) {
-            val result = device.scanResult
-            if (matchesUuidFilter(result) && matchesNearbyFilter(device.highestRssi)) {
+            if (matchesUuidFilter(device.scanResult) && matchesNearbyFilter(device.highestRssi)) {
                 devices.add(device)
             }
         }
@@ -80,19 +79,17 @@ class DevicesLiveData internal constructor(private var mFilterUuidRequired: Bool
     }
 
     private fun matchesUuidFilter(result: ScanResult?): Boolean {
-        if (!mFilterUuidRequired)
+        if (!mFilterUuidRequired) {
             return true
-
-        val record = result!!.scanRecord ?: return false
-
-        val uuids = record.serviceUuids ?: return false
-
-        return uuids.contains(FILTER_UUID)
+        }
+        return result?.scanRecord?.serviceUuids?.contains(FILTER_UUID) ?: false
     }
 
     private fun matchesNearbyFilter(rssi: Int): Boolean {
-        return if (!mFilterNearbyOnly) true else rssi >= FILTER_RSSI
-
+        if (!mFilterNearbyOnly) {
+            return true
+        }
+        return rssi >= FILTER_RSSI
     }
 
     companion object {

@@ -69,7 +69,7 @@ class DevicesAdapter(
     }
 
     override fun getItemCount(): Int {
-        return if (mDevices != null) mDevices!!.size else 0
+        return mDevices?.size ?: 0
     }
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -84,9 +84,7 @@ class DevicesAdapter(
             ButterKnife.bind(this, view)
 
             view.findViewById<View>(R.id.device_container).setOnClickListener {
-                if (mOnItemClickListener != null) {
-                    mOnItemClickListener!!.onItemClick(mDevices!![adapterPosition])
-                }
+                mOnItemClickListener?.onItemClick(mDevices!![adapterPosition])
             }
         }
     }

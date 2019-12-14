@@ -155,35 +155,7 @@ class ScannerActivity : AppCompatActivity(), DevicesAdapter.OnItemClickListener 
     private fun startScan(state: ScannerStateLiveData) {
         // First, check the Location permission. This is required on Marshmallow onwards in order
         // to scan for Bluetooth LE devices.
-        if (Utils.isLocationPermissionsGranted(this)) {
-            mNoLocationPermissionView.visibility = View.GONE
-
-            // Bluetooth must be enabled
-            if (state.isBluetoothEnabled) {
-                mNoBluetoothView.visibility = View.GONE
-
-                // We are now OK to start scanning
-                mScannerViewModel.startScan()
-                mScanningView.visibility = View.VISIBLE
-
-                if (!state.hasRecords()) {
-                    mEmptyView.visibility = View.VISIBLE
-
-                    if (!Utils.isLocationRequired(this) || Utils.isLocationEnabled(this)) {
-                        mNoLocationView.visibility = View.INVISIBLE
-                    } else {
-                        mNoLocationView.visibility = View.VISIBLE
-                    }
-                } else {
-                    mEmptyView.visibility = View.GONE
-                }
-            } else {
-                mNoBluetoothView.visibility = View.VISIBLE
-                mScanningView.visibility = View.INVISIBLE
-                mEmptyView.visibility = View.GONE
-                clear()
-            }
-        } else {
+        if (!Utils.isLocationPermissionsGranted(this)) {
             mNoLocationPermissionView.visibility = View.VISIBLE
             mNoBluetoothView.visibility = View.GONE
             mScanningView.visibility = View.INVISIBLE
@@ -192,6 +164,34 @@ class ScannerActivity : AppCompatActivity(), DevicesAdapter.OnItemClickListener 
             val deniedForever = Utils.isLocationPermissionDeniedForever(this)
             mGrantPermissionButton.visibility = if (deniedForever) View.GONE else View.VISIBLE
             mPermissionSettingsButton.visibility = if (deniedForever) View.VISIBLE else View.GONE
+            return
+        }
+        mNoLocationPermissionView.visibility = View.GONE
+
+        // Bluetooth must be enabled
+        if (!state.isBluetoothEnabled) {
+            mNoBluetoothView.visibility = View.VISIBLE
+            mScanningView.visibility = View.INVISIBLE
+            mEmptyView.visibility = View.GONE
+            clear()
+            return
+        }
+        mNoBluetoothView.visibility = View.GONE
+
+        // We are now OK to start scanning
+        mScannerViewModel.startScan()
+        mScanningView.visibility = View.VISIBLE
+
+        if (state.hasRecords()) {
+            mEmptyView.visibility = View.GONE
+            return
+        }
+        mEmptyView.visibility = View.VISIBLE
+
+        if (!Utils.isLocationRequired(this) || Utils.isLocationEnabled(this)) {
+            mNoLocationView.visibility = View.INVISIBLE
+        } else {
+            mNoLocationView.visibility = View.VISIBLE
         }
     }
 

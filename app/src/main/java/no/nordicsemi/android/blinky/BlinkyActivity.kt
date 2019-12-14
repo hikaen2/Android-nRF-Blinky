@@ -30,13 +30,11 @@ class BlinkyActivity : AppCompatActivity() {
         ButterKnife.bind(this)
 
         val device = intent.getParcelableExtra<DiscoveredBluetoothDevice>(EXTRA_DEVICE)
-        val deviceName = device!!.name
-        val deviceAddress = device.address
 
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
-        supportActionBar!!.title = deviceName
-        supportActionBar!!.subtitle = deviceAddress
+        supportActionBar!!.title = device!!.name
+        supportActionBar!!.subtitle = device.address
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
         // Configure the view model
